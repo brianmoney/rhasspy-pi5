@@ -1,36 +1,35 @@
+version: "3.8"
+
 services:
   mosquitto:
     image: eclipse-mosquitto:2
-    container_name: mosquitto
     restart: unless-stopped
+    container_name: mosquitto
+    volumes:
+      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
     ports:
-      - "1883:1883"         # MQTT for anything on your LAN
-    volumes:                # keep persistence, no custom conf needed
-      - mosquitto_data:/mosquitto/data
-      - mosquitto_log:/mosquitto/log
+      - "1883:1883"
+    networks: [rhasspy-net]
 
   rhasspy:
-    image: rhasspy/rhasspy
+    image: rhasspy/rhasspy:2.5.12
     container_name: rhasspy
     restart: unless-stopped
-    depends_on:
-      - mosquitto
-    devices:
-      - "/dev/snd:/dev/snd"     # ALSA/USB/HAT microphones & speakers
-    group_add:
-      - "29"                    # 'audio' group on Raspberry Pi OS
-    ports:
-      - "12101:12101"           # Rhasspy Web UI
+    networks: [rhasspy-net]
     volumes:
-      - "./profiles:/profiles"  # your custom profile lives here
+      - ~/rhasspy/profiles:/profiles
+      - /dev/snd:/dev/snd       # give the container ALSA access
+      - /etc/localtime:/etc/localtime:ro
+    devices:
+      - "/dev/snd:/dev/snd"
     command: >
-      --user-profiles /profiles
       --profile en
-      --local-mqtt-port 0       # disable internal broker
+      --user-profiles /profiles
+      --microphone arecord
+      --speaker aplay
+networks:
+  rhasspy-net:
 
-volumes:
-  mosquitto_data:
-  mosquitto_log:
 
 
 

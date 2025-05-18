@@ -1,0 +1,14 @@
+{
+  "mqtt": { "host": "mosquitto", "port": 1883 },
+  "audio": {
+    "microphone": { "system": "arecord", "device": "plughw:1,0" },
+    "speaker":    { "system": "aplay",   "device": "plughw:1,0" }
+  },
+  "wake": {
+    "system": "porcupine",
+    "porcupine": {
+      "keyword_path": "porcupine/Computer_en_raspberry-pi_v3_0_0.ppn",
+      "sensitivity": 0.5
+    }
+  }
+}
