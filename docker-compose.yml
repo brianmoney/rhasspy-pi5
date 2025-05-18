@@ -3,8 +3,7 @@ services:
     image: eclipse-mosquitto:2
     restart: unless-stopped
     volumes:
-      # bind-mount the WHOLE directory, not a single file
-      - ./mosquitto/config:/mosquitto/config:ro
+      - ./mosquitto/config:/mosquitto/config        # ← no :ro
     ports: ["1883:1883"]
     networks: [rhasspy-net]
 
