@@ -1,18 +1,30 @@
 services:
-  mosquitto:
-    image: eclipse-mosquitto:2
-    restart: unless-stopped
-    ports:
-      - 1883:1883
 
   rhasspy:
     image: rhasspy/rhasspy:latest
+    container_name: rhasspy
     restart: unless-stopped
-    ports:
-      - 12101:12101
+
+    # Give the container direct access to the host’s network stack
+    network_mode: host          # keeps UDP mic integrations and web UI simple
+
+    # PipeWire → Pulse socket (your Bluetooth speaker already plays through this)
+    environment:
+      - PULSE_SERVER=unix:/run/user/1000/pulse/native   # 1000 = your UID
+
     volumes:
-      - ./profiles:/profiles
-    # **No command: line!**
+      - /run/user/1000/pulse:/run/user/1000/pulse:ro    # read-only is fine
+      - ./profiles:/profiles                            # where Rhasspy stores its profile
+
+    # ONLY the two CLI switches Rhasspy still accepts
+    command: >
+      --user-profiles /profiles
+      --profile en
+
+    # Run Rhasspy under your user so Pulse can authenticate
+    user: "1000:1000"
+    tty: true
+
 
 
 
