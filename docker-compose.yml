@@ -13,4 +13,4 @@ services:
       - ./profiles:/profiles
     user: "1000:1000"
     tty: true
-
+    command: --user-profiles /profiles --profile en
