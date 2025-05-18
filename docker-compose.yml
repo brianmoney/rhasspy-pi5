@@ -21,6 +21,7 @@ services:
     networks: [rhasspy-net]
     ports:
       - "12101:12101"        # Web interface
+    privileged: true
 networks:
   rhasspy-net:
 
