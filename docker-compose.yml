@@ -16,9 +16,7 @@ services:
     volumes:
       - ./profiles:/profiles
       - /etc/localtime:/etc/localtime:ro
-      - /var/lib/alsa/asound.state:/var/lib/alsa/asound.state:ro
-      - /dev/snd:/dev/snd        # ALSA nodes (already there)
-      - /dev/vchiq:/dev/vchiq    # GPU mailbox -> required for bcm2835 audio
+      - /var/lib/alsa/asound.state:/var/lib/alsa/asound.state:ro 
     command: --user-profiles /profiles --profile en
     networks: [rhasspy-net]
     ports:
