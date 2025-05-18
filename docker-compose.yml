@@ -8,9 +8,19 @@ services:
       - "/dev/snd:/dev/snd"
     environment:
       - PULSE_SERVER=unix:/run/user/1000/pulse/native
+      - ALSA_CARD=1
     volumes:
       - /run/user/1000/pulse:/run/user/1000/pulse
       - ./profiles:/profiles
     user: "1000:1000"
     tty: true
-    command: --user-profiles /profiles --profile en
+    depends_on:
+      - mosquitto
+    command: --user-profiles /profiles --profile en --mqtt-host mosquitto
+
+  mosquitto:
+    image: eclipse-mosquitto
+    container_name: mosquitto
+    restart: unless-stopped
+    ports:
+      - "1883:1883"
