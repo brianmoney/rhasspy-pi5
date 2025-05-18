@@ -1,47 +1,32 @@
 services:
+
+  rhasspy:
+    image: rhasspy/rhasspy:2.5.11
+    container_name: rhasspy
+    restart: unless-stopped
+    # Give the container access to the Pi's sound card
+    devices:
+      - /dev/snd:/dev/snd
+    group_add:
+      - "audio"
+    volumes:
+      - ./rhasspy/profiles:/profiles
+    ports:
+      - "12101:12101"   # Web UI
+      - "12183:12183"   # Rhasspy's internal MQTT broker
+    environment:
+      - TZ=YOUR/ZONE   # e.g. Europe/Paris
+
   mosquitto:
     image: eclipse-mosquitto:2
     container_name: mosquitto
     restart: unless-stopped
-    networks: [rhasspy]
     ports:
       - "1883:1883"
-
-
-  rhasspy:
-    image: rhasspy/rhasspy:latest
-    container_name: rhasspy
-    depends_on: [mosquitto]
-    restart: unless-stopped
-    networks: [rhasspy]
-
-    # expose the web UI
-    ports:
-      - "12101:12101"
-
-    # persist profiles and give audio access (Pulse & ALSA)
     volumes:
-      - ./profiles:/profiles
-      - /run/user/1000/pulse:/run/user/1000/pulse:ro
-      - ~/.config/pulse/cookie:/home/rhasspy/.config/pulse/cookie:ro
-      - /dev/snd:/dev/snd
+      - ./mosquitto/config:/mosquitto/config
+      - ./mosquitto/data:/mosquitto/data
 
-    # run Rhasspy under your UID so Pulse can see it
-    user: "1000:1000"
-    environment:
-      - PULSE_SERVER=unix:/run/user/1000/pulse/native
-
-    # pass options *as an array* (no shell-style quoting issues)
-    command: [
-      "--user-profiles","/profiles",
-      "--profile","en",
-      "--mqtt-host","mosquitto",
-      "--mqtt-port","1883",
-      "--local-mqtt-port","0"
-    ]
-
-networks:
-  rhasspy:
 
 
 
