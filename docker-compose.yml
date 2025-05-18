@@ -18,7 +18,8 @@ services:
       - /etc/localtime:/etc/localtime:ro
     command: --user-profiles /profiles --profile en
     networks: [rhasspy-net]
-
+    ports:
+      - "12101:12101"        # Web interface
 networks:
   rhasspy-net:
 
