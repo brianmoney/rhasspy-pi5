@@ -9,6 +9,7 @@ services:
     environment:
       - PULSE_SERVER=unix:/run/user/1000/pulse/native
       - ALSA_CARD=1
+      - RHASSPY_MQTT_HOST=mosquitto
     volumes:
       - /run/user/1000/pulse:/run/user/1000/pulse
       - ./profiles:/profiles
@@ -17,8 +18,7 @@ services:
     depends_on:
       - mosquitto
     command: --user-profiles /profiles --profile en
-    environment:
-      - RHASSPY_MQTT_HOST=mosquitto
+
 
 
   mosquitto:
