@@ -1,55 +1,53 @@
-#################################################################
-# Rhasspy + Mosquitto for Raspberry Pi 5 (PipeWire/PulseAudio)  #
-#################################################################
-
 services:
-
-  # ------------ MQTT broker ------------------------------------
   mosquitto:
     image: eclipse-mosquitto:2
     container_name: mosquitto
     restart: unless-stopped
-    ports:                               # expose for debugging or other clients
-      - "1883:1883"
     networks: [rhasspy]
+    ports:
+      - "1883:1883"
+    volumes:
+      #   feel free to omit these three lines if you’re happy
+      #   with Docker-managed anonymous volumes
+      - ./mosquitto/config:/mosquitto/config:ro
+      - ./mosquitto/data:/mosquitto/data
+      - ./mosquitto/log:/mosquitto/log
 
-  # ------------ Rhasspy voice assistant ------------------------
   rhasspy:
     image: rhasspy/rhasspy:latest
     container_name: rhasspy
+    depends_on: [mosquitto]
     restart: unless-stopped
     networks: [rhasspy]
 
-    # Web UI → http://<pi>:12101
+    # expose the web UI
     ports:
       - "12101:12101"
 
-    # Tell every Rhasspy sub-process to talk to our Mosquitto
-    environment:
-      - MQTT_HOST=mosquitto
-      - MQTT_PORT=1883
-      # PipeWire/Pulse socket so Bluetooth audio works
-      - PULSE_SERVER=unix:/run/user/1000/pulse/native
-
-    # Pulse socket + cookie (read-only is fine)
+    # persist profiles and give audio access (Pulse & ALSA)
     volumes:
+      - ./profiles:/profiles
       - /run/user/1000/pulse:/run/user/1000/pulse:ro
       - ~/.config/pulse/cookie:/home/rhasspy/.config/pulse/cookie:ro
-      - ./profiles:/profiles                 # Rhasspy profile data
+      - /dev/snd:/dev/snd
 
-    # Disable Rhasspy’s built-in Mosquitto and point to external one
-    command: >
-      --user-profiles /profiles
-      --profile en
-      --local-mqtt-port 0
-
-    # Run as your user so Pulse cookies just work
+    # run Rhasspy under your UID so Pulse can see it
     user: "1000:1000"
-    tty: true
+    environment:
+      - PULSE_SERVER=unix:/run/user/1000/pulse/native
 
-# ---------------------------------------------------------------
+    # pass options *as an array* (no shell-style quoting issues)
+    command: [
+      "--user-profiles","/profiles",
+      "--profile","en",
+      "--mqtt-host","mosquitto",
+      "--mqtt-port","1883",
+      "--local-mqtt-port","0"
+    ]
+
 networks:
   rhasspy:
+
 
 
 
