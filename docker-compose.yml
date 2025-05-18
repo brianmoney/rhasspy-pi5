@@ -1,30 +1,55 @@
+#################################################################
+# Rhasspy + Mosquitto for Raspberry Pi 5 (PipeWire/PulseAudio)  #
+#################################################################
+
 services:
 
+  # ------------ MQTT broker ------------------------------------
+  mosquitto:
+    image: eclipse-mosquitto:2
+    container_name: mosquitto
+    restart: unless-stopped
+    ports:                               # expose for debugging or other clients
+      - "1883:1883"
+    networks: [rhasspy]
+
+  # ------------ Rhasspy voice assistant ------------------------
   rhasspy:
     image: rhasspy/rhasspy:latest
     container_name: rhasspy
     restart: unless-stopped
+    networks: [rhasspy]
 
-    # Give the container direct access to the host’s network stack
-    network_mode: host          # keeps UDP mic integrations and web UI simple
+    # Web UI → http://<pi>:12101
+    ports:
+      - "12101:12101"
 
-    # PipeWire → Pulse socket (your Bluetooth speaker already plays through this)
+    # Tell every Rhasspy sub-process to talk to our Mosquitto
     environment:
-      - PULSE_SERVER=unix:/run/user/1000/pulse/native   # 1000 = your UID
+      - MQTT_HOST=mosquitto
+      - MQTT_PORT=1883
+      # PipeWire/Pulse socket so Bluetooth audio works
+      - PULSE_SERVER=unix:/run/user/1000/pulse/native
 
+    # Pulse socket + cookie (read-only is fine)
     volumes:
-      - /run/user/1000/pulse:/run/user/1000/pulse:ro    # read-only is fine
-      - ./profiles:/profiles                            # where Rhasspy stores its profile
+      - /run/user/1000/pulse:/run/user/1000/pulse:ro
+      - ~/.config/pulse/cookie:/home/rhasspy/.config/pulse/cookie:ro
+      - ./profiles:/profiles                 # Rhasspy profile data
 
-    # ONLY the two CLI switches Rhasspy still accepts
+    # Disable Rhasspy’s built-in Mosquitto and point to external one
     command: >
       --user-profiles /profiles
       --profile en
+      --local-mqtt-port 0
 
-    # Run Rhasspy under your user so Pulse can authenticate
+    # Run as your user so Pulse cookies just work
     user: "1000:1000"
     tty: true
 
+# ---------------------------------------------------------------
+networks:
+  rhasspy:
 
 
 
