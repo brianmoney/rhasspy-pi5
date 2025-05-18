@@ -8,7 +8,11 @@ sudo apt update && sudo apt full-upgrade -y
 echo "Installing dependencies..."
 sudo apt install -y alsa-utils pulseaudio curl
 
-echo "Adding user to audio and docker groups..."
+sudo groupadd -f docker         # Add this line to ensure the docker group exists
+sudo usermod -aG audio $USER
+sudo usermod -aG docker $USER
+
+# ...existing code...
 sudo usermod -aG audio $USER
 sudo usermod -aG docker $USER
 
