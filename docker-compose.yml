@@ -26,8 +26,6 @@ services:
     command: >
       --user-profiles /profiles
       --profile en
-      # --mqtt-host mosquitto
-      # --mqtt-port 1883
       --local-mqtt-port 0       # disable internal broker
 
 volumes:
