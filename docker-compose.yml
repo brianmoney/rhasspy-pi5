@@ -1,0 +1,14 @@
+version: "3.9"
+services:
+  voice-app:
+    image: your-image-name
+    restart: unless-stopped
+    devices:
+      - "/dev/snd:/dev/snd"
+    environment:
+      - PULSE_SERVER=unix:/run/user/1000/pulse/native
+    volumes:
+      - /run/user/1000/pulse:/run/user/1000/pulse
+      - ~/.config/pulse:/home/user/.config/pulse
+    user: "1000:1000"
+    tty: true
