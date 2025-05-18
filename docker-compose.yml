@@ -9,9 +9,9 @@ services:
     volumes:
       #   feel free to omit these three lines if you’re happy
       #   with Docker-managed anonymous volumes
-      - ./mosquitto/config:/mosquitto/config:ro
-      - ./mosquitto/data:/mosquitto/data
-      - ./mosquitto/log:/mosquitto/log
+      # - ./mosquitto/config:/mosquitto/config:ro
+      # - ./mosquitto/data:/mosquitto/data
+      # - ./mosquitto/log:/mosquitto/log
 
   rhasspy:
     image: rhasspy/rhasspy:latest
