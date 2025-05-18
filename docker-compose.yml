@@ -1,4 +1,12 @@
 services:
+  mosquitto:
+    image: eclipse-mosquitto:2
+    restart: unless-stopped
+    volumes:
+      - ./mosquitto/config:/mosquitto/config        # ← no :ro
+    ports: ["1883:1883"]
+    networks: [rhasspy-net]
+
   rhasspy:
     image: rhasspy/rhasspy:2.5.11
     platform: linux/arm64
