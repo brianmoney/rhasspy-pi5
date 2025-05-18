@@ -11,7 +11,7 @@ services:
     image: rhasspy/rhasspy
     container_name: rhasspy
     restart: unless-stopped
-    network_mode: host  # Needed for accessing audio hardware directly
+    network_mode: host  # Required for audio input/output and local MQTT
     devices:
       - "/dev/snd:/dev/snd"
     environment:
@@ -25,6 +25,6 @@ services:
     command: >
       --user-profiles /profiles
       --profile en
-      --mqtt-host localhost
+
 
 
