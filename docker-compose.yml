@@ -1,4 +1,3 @@
-version: "3.8"
 
 services:
   mosquitto:
@@ -12,16 +11,16 @@ services:
     networks: [rhasspy-net]
 
   rhasspy:
-    image: rhasspy/rhasspy:2.5.12
+rhasspy:
+    image: rhasspy/rhasspy:2.5.11        # ← works
+    platform: linux/arm64               # Pi 5 = 64-bit ARM
     container_name: rhasspy
     restart: unless-stopped
+    devices: [" /dev/snd:/dev/snd"]
     networks: [rhasspy-net]
     volumes:
       - ~/rhasspy/profiles:/profiles
-      - /dev/snd:/dev/snd       # give the container ALSA access
       - /etc/localtime:/etc/localtime:ro
-    devices:
-      - "/dev/snd:/dev/snd"
     command: >
       --profile en
       --user-profiles /profiles
