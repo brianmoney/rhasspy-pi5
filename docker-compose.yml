@@ -6,12 +6,7 @@ services:
     networks: [rhasspy]
     ports:
       - "1883:1883"
-    volumes:
-      #   feel free to omit these three lines if you’re happy
-      #   with Docker-managed anonymous volumes
-      # - ./mosquitto/config:/mosquitto/config:ro
-      # - ./mosquitto/data:/mosquitto/data
-      # - ./mosquitto/log:/mosquitto/log
+
 
   rhasspy:
     image: rhasspy/rhasspy:latest
