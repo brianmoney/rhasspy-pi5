@@ -1,33 +1,28 @@
-
 services:
   mosquitto:
     image: eclipse-mosquitto:2
     restart: unless-stopped
-    container_name: mosquitto
     volumes:
-      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
-    ports:
-      - "1883:1883"
+      # bind-mount the WHOLE directory, not a single file
+      - ./mosquitto/config:/mosquitto/config:ro
+    ports: ["1883:1883"]
     networks: [rhasspy-net]
 
   rhasspy:
-    image: rhasspy/rhasspy:2.5.11        # ← works
-    platform: linux/arm64               # Pi 5 = 64-bit ARM
-    container_name: rhasspy
+    image: rhasspy/rhasspy:2.5.11      # 2.5.12 tag does not exist
+    platform: linux/arm64             # Pi 5
     restart: unless-stopped
     devices:
       - /dev/snd:/dev/snd
-    networks: [rhasspy-net]
     volumes:
-      - ~/rhasspy/profiles:/profiles
+      - ./profiles:/profiles
       - /etc/localtime:/etc/localtime:ro
-    command: >
-      --profile en
-      --user-profiles /profiles
-      --microphone arecord
-      --speaker aplay
+    command: --user-profiles /profiles --profile en
+    networks: [rhasspy-net]
+
 networks:
   rhasspy-net:
+
 
 
 
