@@ -34,8 +34,8 @@ services:
     ports:
       - "12101:12101"
 
-  networks:
-    rhasspy-net
+    networks: [rhasspy-net]
+
 
 
 
