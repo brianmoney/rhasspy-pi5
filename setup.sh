@@ -27,7 +27,9 @@ load-module module-native-protocol-unix
 EOF
 
 # Start pulseaudio manually
-pulseaudio --start
+systemctl --user daemon-reexec
+systemctl --user enable --now pulseaudio.service
+
 
 # Confirm socket path
 PULSE_SOCKET="/run/user/$(id -u)/pulse/native"
