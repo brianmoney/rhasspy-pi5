@@ -1,25 +1,19 @@
-
 services:
   mosquitto:
     image: eclipse-mosquitto:2
     restart: unless-stopped
     ports:
-      - "1883:1883"
+      - 1883:1883
 
   rhasspy:
-    image: rhasspy/rhasspy
+    image: rhasspy/rhasspy:latest
     restart: unless-stopped
-    depends_on:
-      - mosquitto
     ports:
-      - "12101:12101"
+      - 12101:12101
     volumes:
       - ./profiles:/profiles
-    command: >
-      --user-profiles /profiles
-      --profile en
-      --mqtt-host mosquitto
-      --mqtt-port 1883
+    # **No command: line!**
+
 
 
 
