@@ -3,46 +3,37 @@ services:
     image: eclipse-mosquitto:2
     restart: unless-stopped
     volumes:
-      - ./mosquitto/config:/mosquitto/config        # ← no :ro
-    ports: ["1883:1883"]
-    networks: [rhasspy-net]
+      - ./mosquitto/config:/mosquitto/config
+    ports:
+      - "1883:1883"
+    networks:
+      - rhasspy-net
 
   rhasspy:
     image: rhasspy/rhasspy:2.5.11
-    platform: linux/arm64
+    platform: linux/arm64         # Pi 5
     restart: unless-stopped
 
-    # you can drop /dev/snd when using Pulse-only output
     devices:
-      - /dev/snd:/dev/snd
-
+      - /dev/snd:/dev/snd           # keep if you also use USB/HDMI audio
     volumes:
       - ./profiles:/profiles
       - /etc/localtime:/etc/localtime:ro
       - /var/lib/alsa/asound.state:/var/lib/alsa/asound.state:ro
-      # PulseAudio and DBus sockets from the host session
       - /run/user/1000/pulse:/run/user/1000/pulse
       - /run/user/1000/bus:/run/user/1000/bus
 
     environment:
       PULSE_SERVER: unix:/run/user/1000/pulse/native
-      ALSA_OUTPUT_DEVICE: pulse             # Rhasspy → ALSA→Pulse plugin
-      # if your Bluetooth mic is also default input:
-      ALSA_INPUT_DEVICE: pulse
+      ALSA_OUTPUT_DEVICE: pulse
+      ALSA_INPUT_DEVICE:  pulse
 
     command: --user-profiles /profiles --profile en
     ports:
       - "12101:12101"
+    networks:
+      - rhasspy-net
 
-    networks: [rhasspy-net]
-
-
-
-
-
-
-
-
-
-
-
+# root-level networks block must be a mapping
+networks:
+  rhasspy-net:
