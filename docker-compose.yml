@@ -15,7 +15,8 @@ services:
     platform: linux/arm64               # Pi 5 = 64-bit ARM
     container_name: rhasspy
     restart: unless-stopped
-    devices: [" /dev/snd:/dev/snd"]
+    devices:
+      - /dev/snd:/dev/snd
     networks: [rhasspy-net]
     volumes:
       - ~/rhasspy/profiles:/profiles
