@@ -16,7 +16,10 @@ services:
     tty: true
     depends_on:
       - mosquitto
-    command: --user-profiles /profiles --profile en --mqtt-host mosquitto
+    command: --user-profiles /profiles --profile en
+    environment:
+      - RHASSPY_MQTT_HOST=mosquitto
+
 
   mosquitto:
     image: eclipse-mosquitto
